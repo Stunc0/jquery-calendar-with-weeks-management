@@ -1,5 +1,9 @@
 $(document).ready(function() {
+
+  //params
   moment.locale('fr');
+  var showOtherMonthsDay = true // put false if you don't want to show days from others months (in case first week and last week are on two months);
+
   $('#months').html('');
   var year = moment().format('YYYY');
   var months = moment.months();
@@ -51,11 +55,14 @@ $(document).ready(function() {
       })
 
       $('#days').html('');
-      var days = getDaysInMonth(selectedMonth-1, selectedYear);
+
+      var days = (showOtherMonthsDay) ? getDaysInPerdiod(weeks[0].startDate, weeks[weeks.length - 1].endDate) : getDaysInMonth(selectedMonth-1, selectedYear);
+
       var percentCellDay = 100/days.length;
       days.forEach(function(day){
         var classIfWeekend = (day.dayDate.getDay() == 0 || day.dayDate.getDay() == 6) ? ' lighten-2 weekend' : '';
-        $('#days').append('<button class="btnDay waves-effect waves-light btn  active orange' + classIfWeekend + '" style="padding:0; width:' + percentCellDay + '%" from="' + moment(day.dayDate).format('YYYY-MM-DD') + '" to="' +  moment(day.dayDate).format('YYYY-MM-DD') + '">' + day.number + '</button>');
+        var classIfOtherMonth =  (moment(day.dayDate).format('MM') !=  selectedMonth) ? ' grey ' : '';
+        $('#days').append('<button class="btnDay waves-effect waves-light btn  active orange' + classIfWeekend + classIfOtherMonth + '" style="padding:0; width:' + percentCellDay + '%" from="' + moment(day.dayDate).format('YYYY-MM-DD') + '" to="' +  moment(day.dayDate).format('YYYY-MM-DD') + '">' + day.dayDate.getDate() + '</button>');
       })
 
     }
@@ -140,6 +147,23 @@ function getDaysInMonth(month, year){
        day = day + 1;
    }
   return days;
+}
+
+function getDaysInPerdiod(startDate, endDate){
+    var days=[],
+        firstDate=new Date(startDate.getTime()),
+        lastDate=new Date(endDate.getTime());
+
+    var day=new Date(firstDate.getTime());
+
+    while(day<=lastDate){
+        days.push({
+            dayDate:new Date(day)
+        });
+        day.setDate(day.getDate() + 1);
+    }
+
+    return days;
 }
 
 function getWeekNumber(d) {
