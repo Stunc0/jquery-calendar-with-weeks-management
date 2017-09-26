@@ -3,14 +3,39 @@ $(document).ready(function() {
   $('#months').html('');
   var year = moment().format('YYYY');
   var months = moment.months();
+  var fromTmp = moment(new Date(year, 0, 1)).format('YYYY-MM-DD');
+  var to = moment(new Date(year, 11, 31)).format('YYYY-MM-DD');
+  $('#year').append('<button class="btnPreviousYear waves-effect waves-light btn  col s1" year="' + (parseInt(year) - parseInt(1)) + '" from="' +  moment(new Date(parseInt(year) - parseInt(1), 0, 1)).format('YYYY-MM-DD') + '" to="' + moment(new Date(parseInt(year) - parseInt(1), 11, 31)).format('YYYY-MM-DD') + '"> << </button>');
+  $('#year').append('<button class="btnYear waves-effect waves-light btn  col s10" year="' + year + '" from="' + fromTmp + '" to="' + to + '">' + year + '</button>');
+  $('#year').append('<button class="btnNextYear waves-effect waves-light btn  col s1" year="' + (parseInt(year) + parseInt(1)) + '" from="' +  moment(new Date(parseInt(year) + parseInt(1), 0, 1)).format('YYYY-MM-DD') + '" to="' + moment(new Date(parseInt(year) + parseInt(1), 11, 31)).format('YYYY-MM-DD') + '"> >> </button>');
+
   for(var k in months){
     var fromTmp = moment(new Date(year, k, 1)).format('YYYY-MM-DD');
     var to = moment(new Date(year, parseInt(k)+1, 0)).format('YYYY-MM-DD');
     $('#months').append('<button class="btnMonth waves-effect waves-light btn  col s1" from="' + fromTmp + '" to="' + to + '">' + months[k] + '</button>');
   };
 
-  $(document).on('click', '.btnMonth, .btnWeek, .btnDay', function(){
+  $(document).on('click', '.btnPreviousYear, .btnNextYear, .btnYear, .btnMonth, .btnWeek, .btnDay', function(){
     var $this = $(this);
+
+    if($this.hasClass('btnYear') || $this.hasClass('btnPreviousYear') || $this.hasClass('btnNextYear')){
+
+      var selectedYear = $this.attr('year');
+      $('#year').html('<button class="btnPreviousYear waves-effect waves-light btn  col s1" year="' + (parseInt(selectedYear) - parseInt(1)) + '" from="' +  moment(new Date(parseInt(selectedYear) - parseInt(1), 0, 1)).format('YYYY-MM-DD') + '" to="' + moment(new Date(parseInt(selectedYear) - parseInt(1), 11, 31)).format('YYYY-MM-DD') + '"> << </button>');
+      $('#year').append('<button class="btnYear waves-effect waves-light btn  col s10" year="' + selectedYear + '" from="' + moment(new Date(selectedYear, 0, 1)).format('YYYY-MM-DD') + '" to="' + moment(new Date(selectedYear, 11, 31)).format('YYYY-MM-DD') + '">' + selectedYear + '</button>');
+      $('#year').append('<button class="btnNextYear waves-effect waves-light btn  col s1" year="' + (parseInt(selectedYear) + parseInt(1)) + '" from="' +  moment(new Date(parseInt(selectedYear) + parseInt(1), 0, 1)).format('YYYY-MM-DD') + '" to="' + moment(new Date(parseInt(selectedYear) + parseInt(1), 11, 31)).format('YYYY-MM-DD') + '"> >> </button>');
+
+      $('#months').html('');
+      for(var k in months){
+          var fromTmp = moment(new Date(selectedYear, k, 1)).format('YYYY-MM-DD');
+          var to = moment(new Date(selectedYear, parseInt(k)+1, 0)).format('YYYY-MM-DD');
+          $('#months').append('<button class="btnMonth waves-effect waves-light btn  col s1 active orange" from="' + fromTmp + '" to="' + to + '">' + months[k] + '</button>');
+      };
+
+      $('#weeks').html('');
+      $('#days').html('');
+    }
+
     if($this.hasClass('btnMonth')){
       $('.btnMonth.active').removeClass('active orange');
       $this.addClass('active orange');
