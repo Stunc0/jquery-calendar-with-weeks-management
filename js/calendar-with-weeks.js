@@ -22,85 +22,116 @@ $(document).ready(function() {
   $(document).on('click', '.btnPreviousYear, .btnNextYear, .btnYear, .btnMonth, .btnWeek, .btnDay', function(){
     var $this = $(this);
 
-    if($this.hasClass('btnYear') || $this.hasClass('btnPreviousYear') || $this.hasClass('btnNextYear')){
+      if($this.hasClass('btnYear') || $this.hasClass('btnPreviousYear') || $this.hasClass('btnNextYear')){
 
-      var selectedYear = $this.attr('year');
-      $('#year').html('<button class="btnPreviousYear waves-effect waves-light btn  col s1" year="' + (parseInt(selectedYear) - parseInt(1)) + '" from="' +  moment(new Date(parseInt(selectedYear) - parseInt(1), 0, 1)).format('YYYY-MM-DD') + '" to="' + moment(new Date(parseInt(selectedYear) - parseInt(1), 11, 31)).format('YYYY-MM-DD') + '"> << </button>');
-      $('#year').append('<button class="btnYear waves-effect waves-light btn  col s10" year="' + selectedYear + '" from="' + moment(new Date(selectedYear, 0, 1)).format('YYYY-MM-DD') + '" to="' + moment(new Date(selectedYear, 11, 31)).format('YYYY-MM-DD') + '">' + selectedYear + '</button>');
-      $('#year').append('<button class="btnNextYear waves-effect waves-light btn  col s1" year="' + (parseInt(selectedYear) + parseInt(1)) + '" from="' +  moment(new Date(parseInt(selectedYear) + parseInt(1), 0, 1)).format('YYYY-MM-DD') + '" to="' + moment(new Date(parseInt(selectedYear) + parseInt(1), 11, 31)).format('YYYY-MM-DD') + '"> >> </button>');
+          //on met a jour la ligne dédiée au changement d'année
+          var selectedYear = $this.attr('year');
+          $('#year').html('<button class="btnPreviousYear waves-effect waves-light btn  col s1" year="' + (parseInt(selectedYear) - parseInt(1)) + '" from="' +  moment(new Date(parseInt(selectedYear) - parseInt(1), 0, 1)).format('YYYY-MM-DD') + '" to="' + moment(new Date(parseInt(selectedYear) - parseInt(1), 11, 31)).format('YYYY-MM-DD') + '"> << </button>');
+          $('#year').append('<button class="btnYear waves-effect waves-light btn  col s10" year="' + selectedYear + '" from="' + moment(new Date(selectedYear, 0, 1)).format('YYYY-MM-DD') + '" to="' + moment(new Date(selectedYear, 11, 31)).format('YYYY-MM-DD') + '">' + selectedYear + '</button>');
+          $('#year').append('<button class="btnNextYear waves-effect waves-light btn  col s1" year="' + (parseInt(selectedYear) + parseInt(1)) + '" from="' +  moment(new Date(parseInt(selectedYear) + parseInt(1), 0, 1)).format('YYYY-MM-DD') + '" to="' + moment(new Date(parseInt(selectedYear) + parseInt(1), 11, 31)).format('YYYY-MM-DD') + '"> >> </button>');
 
-      $('#months').html('');
-      for(var k in months){
-          var fromTmp = moment(new Date(selectedYear, k, 1)).format('YYYY-MM-DD');
-          var to = moment(new Date(selectedYear, parseInt(k)+1, 0)).format('YYYY-MM-DD');
-          $('#months').append('<button class="btnMonth waves-effect waves-light btn  col s1 active orange" from="' + fromTmp + '" to="' + to + '">' + months[k] + '</button>');
-      };
+          //on met à jour la ligne des mois
+          $('#months').html('');
+          for(var k in months){
+              var fromTmp = moment(new Date(selectedYear, k, 1)).format('YYYY-MM-DD');
+              var to = moment(new Date(selectedYear, parseInt(k)+1, 0)).format('YYYY-MM-DD');
+              $('#months').append('<button class="btnMonth waves-effect waves-light btn  col s1" from="' + fromTmp + '" to="' + to + '">' + months[k] + '</button>');
+          };
 
-      $('#weeks').html('');
-      $('#days').html('');
-    }
+          $('#weeks').html('');
+          $('#days').html('');
+          $('#periode').addClass('capitalize').html('Année ' + moment($this.attr('from')).format('YYYY'));
+      }
 
-    if($this.hasClass('btnMonth')){
-      $('.btnMonth.active').removeClass('active orange');
-      $this.addClass('active orange');
+      if($this.hasClass('btnMonth')){
+          $('.btnMonth').removeClass('active orange grey lighten-1');
+          $this.addClass('active orange');
 
-      var selectedMonth = $this.attr('from').substr(5, 2);
-      var selectedYear = $this.attr('from').substr(0, 4);
+          var selectedMonth = $this.attr('from').substr(5, 2);
+          var selectedYear = $this.attr('from').substr(0, 4);
 
-      $('#weeks').html('');
-      var weeks = getWeeksInMonth(selectedMonth-1, selectedYear);
-      var percentCellWeek = 100/weeks.length;
-      weeks.forEach(function(week){
-        $('#weeks').append('<button class="btnWeek waves-effect waves-light btn  active orange" style="width:' + percentCellWeek + '%" from="' + moment(week.startDate).format('YYYY-MM-DD') + '" to="' +  moment(week.endDate).format('YYYY-MM-DD') + '">S  ' + week.info.number + '</button>');
-      })
+          $('#weeks').html('');
+          var weeks = getWeeksInMonth(selectedMonth-1, selectedYear);
+          var percentCellWeek = 100/weeks.length;
+          weeks.forEach(function(week){
+              $('#weeks').append('<button class="btnWeek waves-effect waves-light btn " style="width:' + percentCellWeek + '%" number="' + week.info.number + '" from="' + moment(week.startDate).format('YYYY-MM-DD') + '" to="' +  moment(week.endDate).format('YYYY-MM-DD') + '">S  ' + week.info.number + '</button>');
+          })
 
-      $('#days').html('');
 
-      var days = (showOtherMonthsDay) ? getDaysInPerdiod(weeks[0].startDate, weeks[weeks.length - 1].endDate) : getDaysInMonth(selectedMonth-1, selectedYear);
+          $('#days').html('');
 
-      var percentCellDay = 100/days.length;
-      days.forEach(function(day){
-        var classIfWeekend = (day.dayDate.getDay() == 0 || day.dayDate.getDay() == 6) ? ' lighten-2 weekend' : '';
-        var classIfOtherMonth =  (moment(day.dayDate).format('MM') !=  selectedMonth) ? ' grey ' : '';
-        $('#days').append('<button class="btnDay waves-effect waves-light btn  active orange' + classIfWeekend + classIfOtherMonth + '" style="padding:0; width:' + percentCellDay + '%" from="' + moment(day.dayDate).format('YYYY-MM-DD') + '" to="' +  moment(day.dayDate).format('YYYY-MM-DD') + '">' + day.dayDate.getDate() + '</button>');
-      })
+          var days = getDaysInPerdiod(weeks[0].startDate, weeks[weeks.length - 1].endDate);
+          var percentCellDay = 100/days.length;
+          days.forEach(function(day){
+              var classIfWeekend = (day.dayDate.getDay() == 0 || day.dayDate.getDay() == 6) ? ' lighten-2 weekend' : '';
+              var classIfOtherMonth =  (moment(day.dayDate).format('MM') !=  selectedMonth) ? ' otherMonth ' : '';
+              var classWeekNumber = ' ' + getWeekNumber(day.dayDate).number;
+              $('#days').append('<button class="btnDay waves-effect waves-light btn ' + classIfWeekend + classIfOtherMonth + classWeekNumber + '" style="padding:0; width:' + percentCellDay + '%" from="' + moment(day.dayDate).format('YYYY-MM-DD') + '" to="' +  moment(day.dayDate).format('YYYY-MM-DD') + '">' + day.dayDate.getDate() + '</button>');
+          })
 
-    }
+          $('.btnDay').each(function(){
+              if($(this).hasClass('weekend')){
+                  $(this).addClass('blue');
+              }
+          });
 
-    if($this.hasClass('btnWeek')){
-      $('.btnWeek.active').removeClass('active orange');
-      $this.addClass('active orange');
+          $('#periode').addClass('capitalize').html(moment($this.attr('from')).format('MMMM YYYY'));
+      }
 
-      $('.btnDay').each(function(){
-        if($(this).attr('from') >= $this.attr('from') && $(this).attr('from') <= $this.attr('to')){
-          $(this).addClass('active orange');
-        } else {
-          if($(this).hasClass('weekend')){
-            $(this).addClass('blue');
-          }
-          $(this).removeClass('active orange');
-        }
-      });
-    }
 
-    if($this.hasClass('btnDay')){
-      $('.btnWeek').each(function(){
-        if($(this).attr('from') <= $this.attr('from') && $(this).attr('to') >= $this.attr('to')){
-          $(this).addClass('active orange');
-        } else {
-          $(this).removeClass('active orange');
-        }
-      });
+      if($this.hasClass('btnWeek')){
+          $('.btnWeek').removeClass('active orange grey lighten-1');
+          $this.addClass('active orange');
 
-      $('.btnDay').each(function(){
-        if($(this).hasClass('weekend')){
-          $(this).addClass('blue');
-        }
-      });
-      $('.btnDay.active').removeClass('active orange');
+          $('.btnMonth').each(function(){
+              if(moment($this.attr('from')).format('MM YYYY') == moment($(this).attr('from')).format('MM YYYY') || moment($this.attr('to')).format('MM YYYY') == moment($(this).attr('to')).format('MM YYYY')){
+                  $(this).removeClass('active orange grey lighten-1').addClass('grey lighten-1');
+              } else {
+                  $(this).removeClass('active orange grey lighten-1');
+              }
+          });
 
-      $this.addClass('active orange');
-    }
+          $('.btnDay').each(function(){
+              if($(this).attr('from') >= $this.attr('from') && $(this).attr('from') <= $this.attr('to')){
+                  $(this).removeClass('active').addClass('orange');
+              } else {
+                  if($(this).hasClass('weekend')){
+                      $(this).addClass('blue');
+                  }
+                  $(this).removeClass('active orange');
+              }
+          });
+          $('#periode').removeClass('capitalize').html('Semaine ' + moment($this.attr('from')).format('W') + ' (du ' + moment($this.attr('from')).format('DD') + ' au ' + moment($this.attr('to')).format('DD MMMM YYYY') + ')' );
+      }
+
+      if($this.hasClass('btnDay')){
+
+          $('.btnMonth').each(function(){
+              if($(this).attr('from') <= $this.attr('from') && $(this).attr('to') >= $this.attr('to')){
+                  $(this).removeClass('active orange grey lighten-1').addClass('grey lighten-1');
+              } else {
+                  $(this).removeClass('active orange grey lighten-1');
+              }
+          });
+          $('.btnWeek').each(function(){
+              if($(this).attr('from') <= $this.attr('from') && $(this).attr('to') >= $this.attr('to')){
+                  $(this).removeClass('active orange').addClass('grey lighten-1');
+              } else {
+                  $(this).removeClass('active orange grey lighten-1');
+              }
+          });
+
+          $('.btnDay').each(function(){
+              if($(this).hasClass('weekend')){
+                  $(this).addClass('blue');
+              }
+          });
+          $('.btnDay.orange').removeClass('active orange');
+
+          $this.addClass('active orange');
+
+          $('#periode').addClass('capitalize').html(moment($this.attr('from')).format('dddd DD MMMM YYYY'));
+      }
   });
 });
 

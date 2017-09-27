@@ -1,0 +1,30 @@
+.calendar{
+    background-color: #26a69a
+}
+.otherMonth{
+    color: #CCC;
+}
+.capitalize{
+    text-transform: capitalize;
+}
+.btnMonth{
+    text-transform: capitalize;
+}
+.btnWeek{
+    padding-right: 1px;
+    border-right-width: 1px;
+    border-right-color: white;
+    border-right-style: double;
+}
+
+.btnWeek:nth-last-of-type(1){
+    border-right-width: 0px;
+}
+
+.active{
+    color: #58606a !important;
+}
+
+.hover{
+    background-color: #5a6d88;
+}
